@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: recoup
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn server:app
+    envVars:
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: TOP_N_FOR_ACTION
+        value: "5"
+      - key: OUTREACH_BUDGET
+        value: "10"
+      - key: MAX_AUTOMATED_ATTEMPTS
+        value: "3"
