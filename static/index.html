@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recoup — AI Revenue Recovery Agent</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0F1720;
+    --panel:#17212C;
+    --panel-2:#1D2833;
+    --hairline:#2A3644;
+    --text:#EDEFF2;
+    --muted:#8B98A8;
+    --accent:#3ECF8E;
+    --accent-dim:#2A9C6B;
+    --urgency:#F2A65A;
+    --risk:#E2586B;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--ink);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--accent);color:var(--ink);}
+  a{color:var(--accent);}
+
+  /* ---------- moving grid mesh ---------- */
+  body::after{
+    content:'';position:fixed;inset:-2px;z-index:0;pointer-events:none;
+    background-image:
+      linear-gradient(rgba(62,207,142,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(62,207,142,0.05) 1px, transparent 1px);
+    background-size:46px 46px;
+    animation:gridDrift 26s linear infinite;
+    mask-image:radial-gradient(ellipse 85% 65% at 50% 0%, black 35%, transparent 92%);
+    -webkit-mask-image:radial-gradient(ellipse 85% 65% at 50% 0%, black 35%, transparent 92%);
+  }
+  @keyframes gridDrift{
+    from{background-position:0 0, 0 0;}
+    to{background-position:46px 46px, 46px 46px;}
+  }
+
+  /* ---------- drifting aurora glow (behind the grid) ---------- */
+  .aurora{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+  .aurora .blob{position:absolute;border-radius:50%;filter:blur(100px);will-change:transform;}
+  .aurora .blob-1{
+    width:560px;height:560px;top:-160px;left:-120px;
+    background:radial-gradient(circle,var(--accent) 0%,transparent 70%);opacity:0.30;
+    animation:auroraDrift1 24s ease-in-out infinite;
+  }
+  .aurora .blob-2{
+    width:480px;height:480px;top:8%;right:-160px;
+    background:radial-gradient(circle,var(--urgency) 0%,transparent 70%);opacity:0.16;
+    animation:auroraDrift2 30s ease-in-out infinite;
+  }
+  .aurora .blob-3{
+    width:440px;height:440px;bottom:-200px;left:28%;
+    background:radial-gradient(circle,var(--risk) 0%,transparent 70%);opacity:0.12;
+    animation:auroraDrift3 27s ease-in-out infinite;
+  }
+  .aurora .blob-4{
+    width:380px;height:380px;top:38%;left:6%;
+    background:radial-gradient(circle,var(--accent-dim) 0%,transparent 70%);opacity:0.14;
+    animation:auroraDrift4 33s ease-in-out infinite;
+  }
+  @keyframes auroraDrift1{
+    0%,100%{transform:translate(0,0) scale(1);}
+    50%{transform:translate(90px,70px) scale(1.18);}
+  }
+  @keyframes auroraDrift2{
+    0%,100%{transform:translate(0,0) scale(1);}
+    50%{transform:translate(-70px,50px) scale(1.12);}
+  }
+  @keyframes auroraDrift3{
+    0%,100%{transform:translate(0,0) scale(1);}
+    50%{transform:translate(60px,-80px) scale(1.2);}
+  }
+  @keyframes auroraDrift4{
+    0%,100%{transform:translate(0,0) scale(1);}
+    50%{transform:translate(-50px,-60px) scale(1.15);}
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:0 28px;position:relative;z-index:1;}
+
+  /* ---------- top bar ---------- */
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:22px 0;border-bottom:1px solid var(--hairline);
+  }
+  .brand{display:flex;align-items:center;gap:10px;}
+  .brand .mark{
+    width:28px;height:28px;border-radius:6px;
+    background:linear-gradient(135deg,var(--accent),var(--accent-dim));
+    display:flex;align-items:center;justify-content:center;
+    font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:13px;color:var(--ink);
+  }
+  .brand .name{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:15px;letter-spacing:0.2px;}
+  .brand .name .sub{color:var(--muted);font-weight:400;font-size:12px;display:block;margin-top:1px;}
+  .eyebrow-tag{
+    font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);
+    border:1px solid var(--hairline);padding:5px 10px;border-radius:20px;
+  }
+
+  /* ---------- hero ---------- */
+  .hero{padding:64px 0 40px;}
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;color:var(--accent);font-size:12.5px;
+    letter-spacing:1.5px;text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:10px;
+  }
+  .eyebrow::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--accent);display:inline-block;box-shadow:0 0 0 4px rgba(62,207,142,0.15);}
+  h1{
+    font-family:'Space Grotesk',sans-serif;font-weight:700;
+    font-size:44px;line-height:1.12;letter-spacing:-0.5px;margin:0 0 20px;max-width:760px;
+    min-height:100px;
+  }
+  h1 .soft{color:var(--muted);font-weight:500;}
+
+  /* ---------- floating rotating tagline ---------- */
+  .tagline-float{animation:taglineBob 4.5s ease-in-out infinite;}
+  @keyframes taglineBob{0%,100%{transform:translateY(0);}50%{transform:translateY(-7px);}}
+  #tagline{display:block;transition:opacity .5s ease,transform .5s ease;opacity:1;transform:translateY(0);}
+  #tagline.swap{opacity:0;transform:translateY(10px);}
+  .lede{color:var(--muted);font-size:16.5px;max-width:620px;margin:0 0 32px;}
+
+  .run-row{display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+  .run-btn{
+    font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:15px;
+    background:var(--accent);color:#08150E;border:none;border-radius:8px;
+    padding:14px 26px;cursor:pointer;transition:transform .15s ease, box-shadow .15s ease;
+    box-shadow:0 0 0 0 rgba(62,207,142,0);
+  }
+  .run-btn:hover{transform:translateY(-1px);box-shadow:0 8px 24px -8px rgba(62,207,142,0.55);}
+  .run-btn:active{transform:translateY(0);}
+  .run-btn:disabled{opacity:0.6;cursor:not-allowed;transform:none;box-shadow:none;}
+  .run-hint{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--muted);}
+
+  /* ---------- pipeline loading ---------- */
+  .pipeline{
+    display:none;margin-top:36px;border:1px solid var(--hairline);border-radius:var(--radius);
+    background:var(--panel);padding:22px 24px;
+  }
+  .pipeline.active{display:block;}
+  .pipeline-title{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted);margin-bottom:16px;letter-spacing:0.5px;}
+  .steps{display:flex;flex-direction:column;gap:10px;}
+  .step{display:flex;align-items:center;gap:12px;font-family:'IBM Plex Mono',monospace;font-size:13.5px;color:var(--muted);opacity:0.35;transition:opacity .3s ease,color .3s ease;}
+  .step.done{opacity:1;color:var(--text);}
+  .step.current{opacity:1;color:var(--accent);}
+  .step .dot{width:8px;height:8px;border-radius:50%;background:var(--hairline);flex-shrink:0;}
+  .step.done .dot{background:var(--accent);}
+  .step.current .dot{background:var(--accent);animation:pulse 1s infinite ease-in-out;}
+  @keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.6);}}
+
+  .error-box{
+    display:none;margin-top:28px;border:1px solid rgba(226,88,107,0.4);background:rgba(226,88,107,0.08);
+    border-radius:var(--radius);padding:18px 20px;color:#F3B4BE;font-size:14px;
+  }
+  .error-box.active{display:block;}
+  .error-box strong{color:var(--risk);}
+
+  /* ---------- results ---------- */
+  #results{display:none;padding-bottom:100px;}
+  #results.active{display:block;animation:fadein .5s ease;}
+  @keyframes fadein{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+  .section{
+    margin-top:52px;
+    opacity:0;transform:translateY(24px);
+    transition:opacity .6s ease, transform .6s ease;
+  }
+  .section.in-view{opacity:1;transform:translateY(0);}
+  .section-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;}
+  .section-title{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:600;}
+  .section-note{color:var(--muted);font-size:13.5px;}
+
+  /* summary stat cards */
+  .stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .stat-card{background:var(--panel);border:1px solid var(--hairline);border-radius:var(--radius);padding:22px 22px 20px;}
+  .stat-label{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:10px;}
+  .stat-value{font-family:'Space Grotesk',sans-serif;font-size:30px;font-weight:700;letter-spacing:-0.5px;}
+  .stat-card.highlight{border-color:rgba(62,207,142,0.45);background:linear-gradient(160deg,rgba(62,207,142,0.10),var(--panel) 60%);}
+  .stat-card.highlight .stat-value{color:var(--accent);}
+  @keyframes winPulse{
+    0%{box-shadow:0 0 0 0 rgba(62,207,142,0.55);}
+    70%{box-shadow:0 0 0 18px rgba(62,207,142,0);}
+    100%{box-shadow:0 0 0 0 rgba(62,207,142,0);}
+  }
+  .stat-card.win{animation:winPulse 1.1s ease-out 2;}
+  .stat-sub{font-size:12.5px;color:var(--muted);margin-top:6px;}
+
+  /* comparison */
+  .compare-grid{display:grid;grid-template-columns:1fr auto 1fr;gap:0;align-items:stretch;}
+  .compare-card{background:var(--panel);border:1px solid var(--hairline);padding:24px;}
+  .compare-card:first-child{border-radius:var(--radius) 0 0 var(--radius);}
+  .compare-card:last-child{border-radius:0 var(--radius) var(--radius) 0;border-left:none;}
+  .compare-card.agent{background:linear-gradient(160deg,rgba(62,207,142,0.08),var(--panel) 55%);border-color:rgba(62,207,142,0.35);}
+  .compare-vs{
+    display:flex;align-items:center;justify-content:center;width:56px;background:var(--ink);
+    border-top:1px solid var(--hairline);border-bottom:1px solid var(--hairline);
+    font-family:'IBM Plex Mono',monospace;color:var(--muted);font-size:11px;
+  }
+  .compare-label{font-family:'IBM Plex Mono',monospace;font-size:11.5px;text-transform:uppercase;letter-spacing:0.8px;color:var(--muted);margin-bottom:14px;}
+  .compare-label.agent-label{color:var(--accent);}
+  .compare-row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--hairline);font-size:14px;}
+  .compare-row:last-child{border-bottom:none;}
+  .compare-row .k{color:var(--muted);}
+  .compare-row .v{font-family:'IBM Plex Mono',monospace;font-weight:500;}
+  .compare-explain{margin-top:16px;color:var(--muted);font-size:13px;line-height:1.6;}
+  .compare-explain b{color:var(--text);}
+
+  /* queue table */
+  .queue-table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--hairline);border-radius:var(--radius);overflow:hidden;}
+  .queue-table thead th{
+    text-align:left;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;
+    letter-spacing:0.6px;color:var(--muted);padding:12px 14px;border-bottom:1px solid var(--hairline);font-weight:500;
+  }
+  .queue-table tbody tr{border-bottom:1px solid var(--hairline);cursor:default;transition:background .15s ease;}
+  .queue-table tbody tr:last-child{border-bottom:none;}
+  .queue-table tbody tr.expandable{cursor:pointer;}
+  .queue-table tbody tr.expandable:hover{background:var(--panel-2);}
+  .queue-table td{padding:12px 14px;font-size:13.5px;vertical-align:middle;}
+  .mono{font-family:'IBM Plex Mono',monospace;}
+  .rank-pill{
+    display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;
+    background:var(--hairline);font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);
+  }
+  tr.top-priority .rank-pill{background:var(--accent);color:var(--ink);font-weight:600;}
+  .badge{font-family:'IBM Plex Mono',monospace;font-size:10.5px;padding:3px 8px;border-radius:12px;text-transform:uppercase;letter-spacing:0.4px;}
+  .badge.low{background:rgba(62,207,142,0.14);color:var(--accent);}
+  .badge.medium{background:rgba(242,166,90,0.14);color:var(--urgency);}
+  .badge.high{background:rgba(226,88,107,0.16);color:var(--risk);}
+  .chevron{color:var(--muted);font-size:11px;transition:transform .2s ease;display:inline-block;}
+  tr.expanded .chevron{transform:rotate(90deg);}
+
+  .detail-row td{background:var(--ink);padding:0;}
+  .detail-inner{display:none;padding:20px 22px 24px;border-bottom:1px solid var(--hairline);}
+  tr.expanded + .detail-row .detail-inner{display:block;}
+  .detail-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:24px;}
+  .detail-block h4{
+    font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:0.6px;
+    color:var(--muted);margin:0 0 8px;
+  }
+  .detail-block p{margin:0 0 14px;font-size:13.5px;color:var(--text);}
+  .formula{
+    font-family:'IBM Plex Mono',monospace;font-size:13px;background:var(--panel);border:1px solid var(--hairline);
+    border-radius:6px;padding:10px 12px;color:var(--accent);display:inline-block;
+  }
+  .message-box{
+    background:var(--panel);border:1px solid var(--hairline);border-radius:8px;padding:14px 16px;
+    font-size:13.5px;color:var(--text);line-height:1.65;
+  }
+  .critique-note{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:12.5px;color:var(--muted);}
+  .critique-note .tick{font-family:'IBM Plex Mono',monospace;}
+  .critique-note.pass .tick{color:var(--accent);}
+  .critique-note.revised .tick{color:var(--urgency);}
+
+  /* stat grid now flexes to fit 5 cards */
+  .stat-grid{grid-template-columns:repeat(auto-fit,minmax(190px,1fr));}
+  .stat-card.warn .stat-value{color:var(--urgency);}
+
+  /* disclosure captions */
+  .disclosure{font-size:12px;color:var(--muted);margin-top:10px;line-height:1.55;}
+  .disclosure b{color:var(--text);font-weight:500;}
+
+  /* contact status bar */
+  .contact-bar-wrap{margin-top:22px;}
+  .contact-bar{display:flex;height:14px;border-radius:7px;overflow:hidden;border:1px solid var(--hairline);background:var(--panel);}
+  .contact-bar-seg{height:100%;transition:width .6s ease;}
+  .contact-bar-seg.contacted{background:var(--accent);}
+  .contact-bar-seg.escalated{background:var(--urgency);}
+  .contact-bar-seg.yet{background:var(--hairline);}
+  .contact-legend{display:flex;gap:22px;margin-top:12px;flex-wrap:wrap;}
+  .contact-legend-item{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--muted);}
+  .contact-legend-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+  .contact-legend-dot.contacted{background:var(--accent);}
+  .contact-legend-dot.escalated{background:var(--urgency);}
+  .contact-legend-dot.yet{background:var(--hairline);}
+  .contact-legend-item b{font-family:'IBM Plex Mono',monospace;color:var(--text);font-weight:600;}
+
+  /* funnel */
+  .funnel{display:flex;align-items:stretch;gap:0;border:1px solid var(--hairline);border-radius:var(--radius);overflow:hidden;background:var(--panel);}
+  .funnel-step{flex:1;padding:18px 16px;text-align:center;position:relative;border-right:1px solid var(--hairline);}
+  .funnel-step:last-child{border-right:none;}
+  .funnel-step .fs-label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:0.6px;color:var(--muted);margin-bottom:8px;}
+  .funnel-step .fs-value{font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:700;}
+  .funnel-step.recovered .fs-value{color:var(--accent);}
+  .funnel-arrow{display:flex;align-items:center;justify-content:center;width:28px;color:var(--muted);font-size:14px;background:var(--ink);border-right:1px solid var(--hairline);}
+
+  /* trace badges */
+  .trace-badge{font-family:'IBM Plex Mono',monospace;font-size:9.5px;padding:2px 7px;border-radius:10px;text-transform:uppercase;letter-spacing:0.4px;margin-left:8px;vertical-align:middle;}
+  .trace-badge.llm{background:rgba(62,207,142,0.14);color:var(--accent);}
+  .trace-badge.deterministic{background:rgba(139,152,168,0.18);color:var(--muted);}
+  .trace-badge.mixed{background:rgba(242,166,90,0.14);color:var(--urgency);}
+  .step .trace-badge{margin-left:auto;}
+  .step{justify-content:space-between;}
+
+  .outcome-pill{font-family:'IBM Plex Mono',monospace;font-size:11px;padding:4px 10px;border-radius:14px;display:inline-block;}
+  .outcome-pill.recovered{background:rgba(62,207,142,0.14);color:var(--accent);}
+  .outcome-pill.not-recovered{background:rgba(226,88,107,0.14);color:var(--risk);}
+  .outcome-pill.escalated{background:rgba(242,166,90,0.14);color:var(--urgency);}
+
+  .mini-trace{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;}
+  .mini-trace li{font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:baseline;}
+  .mini-trace .step-name{font-family:'IBM Plex Mono',monospace;color:var(--text);min-width:130px;}
+
+  .audit-btn{
+    font-family:'IBM Plex Mono',monospace;font-size:12px;background:transparent;color:var(--muted);
+    border:1px solid var(--hairline);border-radius:6px;padding:8px 14px;cursor:pointer;transition:all .15s ease;
+  }
+  .audit-btn:hover{color:var(--text);border-color:var(--accent);}
+
+  .empty-state{text-align:center;padding:50px 20px;color:var(--muted);border:1px dashed var(--hairline);border-radius:var(--radius);}
+
+  footer{text-align:center;padding:40px 0;color:var(--muted);font-size:12.5px;border-top:1px solid var(--hairline);margin-top:60px;}
+
+  @media (max-width:760px){
+    h1{font-size:32px;}
+    .stat-grid{grid-template-columns:1fr;}
+    .compare-grid{grid-template-columns:1fr;}
+    .compare-vs{width:100%;padding:8px 0;border-left:1px solid var(--hairline);border-right:1px solid var(--hairline);}
+    .compare-card:first-child{border-radius:var(--radius) var(--radius) 0 0;}
+    .compare-card:last-child{border-radius:0 0 var(--radius) var(--radius);border-left:1px solid var(--hairline);border-top:none;}
+    .detail-grid{grid-template-columns:1fr;}
+    .queue-table{display:block;overflow-x:auto;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none !important;transition:none !important;}
+  }
+</style>
+</head>
+<body>
+
+<div class="aurora">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+  <div class="blob blob-4"></div>
+</div>
+
+<div class="wrap">
+  <div class="topbar">
+    <div class="brand">
+      <div class="mark">RC</div>
+      <div class="name">Recoup<span class="sub">agentic payment-recovery pipeline</span></div>
+    </div>
+    <div class="eyebrow-tag">Telco Customer Churn dataset</div>
+  </div>
+
+  <div class="hero">
+    <div class="eyebrow">Autonomous · Explainable · Self-correcting</div>
+    <div class="tagline-float"><h1 id="tagline">Stop treating every failed payment the same way.</h1></div>
+    <p class="lede">This agent diagnoses why each payment failed, ranks accounts by an explainable recovery-value formula, drafts outreach per account, and grades its own drafts before they'd ever ship — then shows exactly how much better that is than contacting everyone equally.</p>
+    <div class="run-row">
+      <button class="run-btn" id="runBtn" onclick="runAgent()">Run Agent</button>
+      <span class="run-hint" id="runHint">→ diagnose → prioritize → compare → draft → self-critique</span>
+    </div>
+
+    <div class="pipeline" id="pipeline">
+      <div class="pipeline-title">AGENT PIPELINE · steps below are read from the backend's actual execution trace</div>
+      <div class="steps" id="steps"></div>
+    </div>
+
+    <div class="error-box" id="errorBox"><strong>Something went wrong.</strong> <span id="errorMsg"></span></div>
+
+    <p class="disclosure">
+      <b>What's real vs. simulated:</b> diagnosis, drafting, and self-critique are live calls to Claude.
+      <code>pay_likelihood</code> is that model's estimate from the available signals — not a trained
+      payment-probability model. Recovery outcomes below are a seeded simulation for demo purposes, not
+      real payment results. The agent's action authority is bounded to a fixed set (reminder, payment-link
+      retry, empathetic outreach, escalate) and accounts with too many prior failed attempts are routed to
+      manual review instead of automated outreach.
+    </p>
+  </div>
+
+  <div id="results">
+    <div class="section" id="summarySection">
+      <div class="section-head">
+        <div class="section-title">Portfolio summary</div>
+        <div class="section-note" id="summaryNote"></div>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-label">Total revenue at risk</div>
+          <div class="stat-value" id="statAtRisk">$0</div>
+          <div class="stat-sub" id="statAtRiskSub"></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Recoverable estimate</div>
+          <div class="stat-value" id="statRecoverable">$0</div>
+          <div class="stat-sub">Sum of amount × pay likelihood</div>
+        </div>
+        <div class="stat-card highlight">
+          <div class="stat-label">Revenue recovered (simulated)</div>
+          <div class="stat-value" id="statRecovered">$0</div>
+          <div class="stat-sub" id="statRecoveredSub"></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Recovery rate (simulated)</div>
+          <div class="stat-value" id="statRate">0%</div>
+          <div class="stat-sub" id="statRateSub"></div>
+        </div>
+        <div class="stat-card highlight" id="gainCard">
+          <div class="stat-label">Agent vs. naive efficiency gain</div>
+          <div class="stat-value" id="statGain">+0%</div>
+          <div class="stat-sub" id="statGainSub"></div>
+        </div>
+      </div>
+
+      <div class="funnel" style="margin-top:18px;">
+        <div class="funnel-step"><div class="fs-label">At risk</div><div class="fs-value" id="funnelAtRisk">0</div></div>
+        <div class="funnel-arrow">→</div>
+        <div class="funnel-step"><div class="fs-label">Prioritized</div><div class="fs-value" id="funnelPrioritized">0</div></div>
+        <div class="funnel-arrow">→</div>
+        <div class="funnel-step"><div class="fs-label">Contacted</div><div class="fs-value" id="funnelContacted">0</div></div>
+        <div class="funnel-arrow">→</div>
+        <div class="funnel-step recovered"><div class="fs-label">Recovered</div><div class="fs-value" id="funnelRecovered">0</div></div>
+      </div>
+      <div class="contact-bar-wrap">
+        <div class="section-note" style="margin-bottom:10px;">Outreach status across the queue</div>
+        <div class="contact-bar">
+          <div class="contact-bar-seg contacted" id="segContacted" style="width:0%" title="Contacted"></div>
+          <div class="contact-bar-seg escalated" id="segEscalated" style="width:0%" title="Escalated"></div>
+          <div class="contact-bar-seg yet" id="segYet" style="width:0%" title="Yet to contact"></div>
+        </div>
+        <div class="contact-legend">
+          <div class="contact-legend-item"><span class="contact-legend-dot contacted"></span>Contacted <b id="legContacted">0</b></div>
+          <div class="contact-legend-item"><span class="contact-legend-dot escalated"></span>Escalated (manual review) <b id="legEscalated">0</b></div>
+          <div class="contact-legend-item"><span class="contact-legend-dot yet"></span>Yet to contact <b id="legYet">0</b></div>
+        </div>
+      </div>
+
+      <div style="margin-top:16px;">
+        <button class="audit-btn" id="auditBtn" onclick="downloadAuditTrail()">⬇ Download audit trail (JSON)</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-head">
+        <div class="section-title">Naive baseline vs. agent</div>
+        <div class="section-note">Same outreach budget, different ordering</div>
+      </div>
+      <div class="compare-grid">
+        <div class="compare-card naive">
+          <div class="compare-label">Naive — contact in load order</div>
+          <div class="compare-row"><span class="k">Accounts contacted</span><span class="v" id="naiveContacted">–</span></div>
+          <div class="compare-row"><span class="k">Amount targeted</span><span class="v" id="naiveTargeted">–</span></div>
+          <div class="compare-row"><span class="k">Expected recovery</span><span class="v" id="naiveExpected">–</span></div>
+          <div class="compare-row"><span class="k">Revenue recovered (sim.)</span><span class="v" id="naiveRecovered">–</span></div>
+          <div class="compare-row"><span class="k">Recovery rate (sim.)</span><span class="v" id="naiveRate">–</span></div>
+        </div>
+        <div class="compare-vs">VS</div>
+        <div class="compare-card agent">
+          <div class="compare-label agent-label">Agent — prioritized order</div>
+          <div class="compare-row"><span class="k">Accounts contacted</span><span class="v" id="agentContacted">–</span></div>
+          <div class="compare-row"><span class="k">Amount targeted</span><span class="v" id="agentTargeted">–</span></div>
+          <div class="compare-row"><span class="k">Expected recovery</span><span class="v" id="agentExpected">–</span></div>
+          <div class="compare-row"><span class="k">Revenue recovered (sim.)</span><span class="v" id="agentRecovered">–</span></div>
+          <div class="compare-row"><span class="k">Recovery rate (sim.)</span><span class="v" id="agentRate">–</span></div>
+        </div>
+      </div>
+      <p class="compare-explain" id="compareExplain"></p>
+    </div>
+
+    <div class="section">
+      <div class="section-head">
+        <div class="section-title">Ranked recovery queue</div>
+        <div class="section-note">Click a top-priority row to see the agent's full reasoning</div>
+      </div>
+      <table class="queue-table" id="queueTable">
+        <thead>
+          <tr>
+            <th>#</th><th>Customer</th><th>Amount</th><th>Failure reason</th>
+            <th>Confidence</th><th>Churn risk</th><th>Pay likelihood</th><th>Recovery score</th><th>Outcome</th>
+          </tr>
+        </thead>
+        <tbody id="queueBody"></tbody>
+      </table>
+      <div class="empty-state" id="emptyState" style="display:none;">No accounts in the failed-payment queue for this run.</div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  Built for the Revenue Recovery track · demo data derived from the Kaggle Telco Customer Churn dataset · all amounts shown in USD by convention
+</footer>
+
+<script>
+let lastResult = null;
+
+// ---------- floating rotating tagline ----------
+const TAGLINES = [
+  "Stop treating every failed payment the same way.",
+  "Not every account deserves the same effort — or the same email.",
+  "Prioritize by recovery value, not by row order.",
+  "Every decision explained. Every action bounded.",
+  "The agent grades its own work before you ever see it.",
+];
+let taglineIndex = 0;
+function cycleTagline(){
+  const el = document.getElementById('tagline');
+  if(!el) return;
+  el.classList.add('swap');
+  setTimeout(()=>{
+    taglineIndex = (taglineIndex + 1) % TAGLINES.length;
+    el.textContent = TAGLINES[taglineIndex];
+    el.classList.remove('swap');
+  }, 500);
+}
+setInterval(cycleTagline, 6800);
+
+// ---------- animated count-up numbers ----------
+function prefersReducedMotion(){
+  return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+function animateNumber(el, endValue, format, duration=900){
+  if(!el) return;
+  if(prefersReducedMotion()){ el.textContent = format(endValue); return; }
+  const start = performance.now();
+  function frame(now){
+    const t = Math.min((now - start) / duration, 1);
+    const eased = 1 - Math.pow(1 - t, 3);
+    el.textContent = format(endValue * eased);
+    if(t < 1) requestAnimationFrame(frame);
+    else el.textContent = format(endValue);
+  }
+  requestAnimationFrame(frame);
+}
+
+// ---------- scroll-reveal sections ----------
+function setupScrollReveal(){
+  const sections = document.querySelectorAll('.section');
+  if(!('IntersectionObserver' in window)){
+    sections.forEach(s=>s.classList.add('in-view'));
+    return;
+  }
+  const observer = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        entry.target.classList.add('in-view');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, {threshold:0.15});
+  sections.forEach(s=>observer.observe(s));
+}
+setupScrollReveal();
+
+// Fallback labels shown while waiting on the network response (the real
+// labels + LLM/deterministic tags get swapped in from data.pipeline_trace
+// once the response arrives, so what's ultimately displayed is backend-driven).
+const PRE_RUN_STEPS = [
+  {key:'load', label:'Loading failed-payment queue', type:'deterministic'},
+  {key:'diagnose', label:'Diagnosing each account (technical vs. churn signal)', type:'llm'},
+  {key:'prioritize', label:'Scoring recovery priority (amount × pay likelihood × urgency)', type:'deterministic'},
+  {key:'baseline', label:'Comparing against naive baseline + simulating outcomes', type:'deterministic'},
+  {key:'decide_draft', label:'Checking stopping rule, deciding action, drafting outreach', type:'mixed'},
+  {key:'critique', label:'Self-critiquing and revising drafts', type:'llm'},
+];
+
+function renderSteps(steps){
+  const container = document.getElementById('steps');
+  container.innerHTML = steps.map((s,i)=>`
+    <div class="step" data-step="${i}">
+      <span style="display:flex;align-items:center;"><span class="dot"></span> ${escapeHtml(s.label)}</span>
+      <span class="trace-badge ${s.type}">${s.type}</span>
+    </div>
+  `).join('');
+}
+
+function setStep(i, state){
+  const el = document.querySelector(`.step[data-step="${i}"]`);
+  if(!el) return;
+  el.classList.remove('done','current');
+  if(state) el.classList.add(state);
+}
+
+async function animateSteps(count){
+  for(let i=0;i<count;i++){
+    setStep(i,'current');
+    await new Promise(r=>setTimeout(r, 420));
+    setStep(i,'done');
+  }
+}
+
+function fmtMoney(n){
+  return '$' + Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+function fmtPct(n){
+  const sign = n>0 ? '+' : '';
+  return `${sign}${n}%`;
+}
+
+const REQUEST_TIMEOUT_MS = 45000;
+
+async function runAgent(){
+  const btn = document.getElementById('runBtn');
+  const pipeline = document.getElementById('pipeline');
+  const errorBox = document.getElementById('errorBox');
+  const results = document.getElementById('results');
+
+  btn.disabled = true;
+  btn.textContent = 'Running…';
+  errorBox.classList.remove('active');
+  results.classList.remove('active');
+  pipeline.classList.add('active');
+  renderSteps(PRE_RUN_STEPS);
+
+  const stepAnimation = animateSteps(PRE_RUN_STEPS.length);
+  const controller = new AbortController();
+  const timeoutId = setTimeout(()=>controller.abort(), REQUEST_TIMEOUT_MS);
+
+  try{
+    const res = await fetch('/api/run', {method:'POST', signal: controller.signal});
+    clearTimeout(timeoutId);
+    const payload = await res.json();
+
+    await stepAnimation; // let the visual pipeline finish its beat regardless of network speed
+
+    if(!res.ok || !payload.ok){
+      throw new Error(payload.error || `Request failed (${res.status})`);
+    }
+
+    lastResult = payload.data;
+    // Swap in the real, backend-reported trace (labels + llm/deterministic
+    // tags) now that we have it, so what's on screen reflects what
+    // actually ran rather than the pre-run placeholder.
+    if(Array.isArray(lastResult.pipeline_trace) && lastResult.pipeline_trace.length){
+      renderSteps(lastResult.pipeline_trace.map(s=>({label:s.label, type:s.type})));
+      document.querySelectorAll('.step').forEach(s=>s.classList.add('done'));
+    }
+    renderResults(lastResult);
+    pipeline.classList.remove('active');
+    results.classList.add('active');
+  }catch(err){
+    clearTimeout(timeoutId);
+    pipeline.classList.remove('active');
+    const msg = err.name === 'AbortError'
+      ? 'The agent took too long to respond (timed out after 45s). Please try again.'
+      : (err.message || 'Please try again in a moment.');
+    document.getElementById('errorMsg').textContent = msg;
+    errorBox.classList.add('active');
+  }finally{
+    btn.disabled = false;
+    btn.textContent = 'Run Agent Again';
+  }
+}
+
+function downloadAuditTrail(){
+  if(!lastResult){ return; }
+  const payload = {
+    run_id: lastResult.run_id,
+    started_at: lastResult.started_at,
+    finished_at: lastResult.finished_at,
+    audit_log: lastResult.audit_log,
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `audit-trail-${lastResult.run_id}.json`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+function outcomePill(acc){
+  if(acc.stopped_by_rule){
+    return `<span class="outcome-pill escalated">escalated</span>`;
+  }
+  if(acc.simulated_recovered === true){
+    return `<span class="outcome-pill recovered">recovered</span>`;
+  }
+  if(acc.simulated_recovered === false){
+    return `<span class="outcome-pill not-recovered">not recovered</span>`;
+  }
+  return `<span style="color:var(--muted);font-size:12px;">not contacted</span>`;
+}
+
+function renderContactBar(data){
+  // Escalated accounts are technically within the outreach budget (top N by
+  // rank) but the stopping rule blocked automated outreach before drafting,
+  // so they never actually got contacted — split them out of "contacted"
+  // rather than double-counting. "Yet to contact" is the rest of the queue
+  // beyond this run's outreach budget.
+  const total = data.summary.total_accounts;
+  const escalated = data.summary.accounts_escalated || 0;
+  const contacted = Math.max(0, data.funnel.contacted - escalated);
+  const yetToContact = Math.max(0, total - data.funnel.contacted);
+
+  const pct = n => total > 0 ? (n / total * 100) : 0;
+
+  const segContacted = document.getElementById('segContacted');
+  const segEscalated = document.getElementById('segEscalated');
+  const segYet = document.getElementById('segYet');
+  segContacted.style.width = `${pct(contacted)}%`;
+  segEscalated.style.width = `${pct(escalated)}%`;
+  segYet.style.width = `${pct(yetToContact)}%`;
+  segContacted.title = `Contacted — ${contacted} (${pct(contacted).toFixed(0)}%)`;
+  segEscalated.title = `Escalated (manual review) — ${escalated} (${pct(escalated).toFixed(0)}%)`;
+  segYet.title = `Yet to contact — ${yetToContact} (${pct(yetToContact).toFixed(0)}%)`;
+
+  document.getElementById('legContacted').textContent = `${contacted} (${pct(contacted).toFixed(0)}%)`;
+  document.getElementById('legEscalated').textContent = `${escalated} (${pct(escalated).toFixed(0)}%)`;
+  document.getElementById('legYet').textContent = `${yetToContact} (${pct(yetToContact).toFixed(0)}%)`;
+}
+
+function renderResults(data){
+  // Force all result sections visible immediately rather than waiting on the
+  // IntersectionObserver scroll-reveal — on some browsers/viewports the
+  // observer never reports a section as intersecting (e.g. very tall
+  // viewports, embedded frames, some zoom levels), leaving real data stuck
+  // at opacity:0 (present in the DOM/selectable, but invisible on screen).
+  document.querySelectorAll('#results .section').forEach(sec => sec.classList.add('in-view'));
+
+  const s = data.summary;
+  animateNumber(document.getElementById('statAtRisk'), s.total_revenue_at_risk, fmtMoney);
+  document.getElementById('statAtRiskSub').textContent = `${s.total_accounts} accounts in the failed-payment queue`;
+  animateNumber(document.getElementById('statRecoverable'), s.recoverable_estimate, fmtMoney);
+  animateNumber(document.getElementById('statRecovered'), s.revenue_recovered, fmtMoney);
+  document.getElementById('statRecoveredSub').textContent = `${data.funnel.recovered}/${data.funnel.contacted} contacted accounts, simulated`;
+  animateNumber(document.getElementById('statRate'), s.recovery_rate*100, v=>`${Math.round(v)}%`);
+  document.getElementById('statRateSub').textContent = s.accounts_escalated
+    ? `${s.accounts_escalated} account(s) escalated by stopping rule`
+    : 'of accounts the agent contacted';
+  animateNumber(document.getElementById('statGain'), s.efficiency_gain_pct, v=>fmtPct(Number(v.toFixed(1))));
+  document.getElementById('statGainSub').textContent = `expected-value basis · ${fmtPct(s.simulated_efficiency_gain_pct)} on simulated outcomes`;
+  document.getElementById('summaryNote').textContent = `Outreach budget: ${s.outreach_budget} accounts · run ${data.run_id.slice(0,8)}`;
+
+  const gainCard = document.getElementById('gainCard');
+  gainCard.classList.remove('win');
+  void gainCard.offsetWidth; // force reflow so the pulse can retrigger on repeated runs
+  if(s.efficiency_gain_pct > 0){
+    setTimeout(()=>gainCard.classList.add('win'), 900);
+  }
+
+  animateNumber(document.getElementById('funnelAtRisk'), data.funnel.at_risk, v=>String(Math.round(v)));
+  animateNumber(document.getElementById('funnelPrioritized'), data.funnel.prioritized, v=>String(Math.round(v)));
+  animateNumber(document.getElementById('funnelContacted'), data.funnel.contacted, v=>String(Math.round(v)));
+  animateNumber(document.getElementById('funnelRecovered'), data.funnel.recovered, v=>String(Math.round(v)));
+
+  renderContactBar(data);
+
+  const b = data.baseline_comparison;
+  document.getElementById('naiveContacted').textContent = b.naive.accounts_contacted;
+  document.getElementById('naiveTargeted').textContent = fmtMoney(b.naive.total_amount_targeted);
+  document.getElementById('naiveExpected').textContent = fmtMoney(b.naive.expected_recovery);
+  document.getElementById('naiveRecovered').textContent = `${fmtMoney(b.naive.revenue_recovered)} (${b.naive.accounts_recovered}/${b.naive.accounts_contacted})`;
+  document.getElementById('naiveRate').textContent = `${Math.round(b.naive.recovery_rate*100)}%`;
+  document.getElementById('agentContacted').textContent = b.agent.accounts_contacted;
+  document.getElementById('agentTargeted').textContent = fmtMoney(b.agent.total_amount_targeted);
+  document.getElementById('agentExpected').textContent = fmtMoney(b.agent.expected_recovery);
+  document.getElementById('agentRecovered').textContent = `${fmtMoney(b.agent.revenue_recovered)} (${b.agent.accounts_recovered}/${b.agent.accounts_contacted})`;
+  document.getElementById('agentRate').textContent = `${Math.round(b.agent.recovery_rate*100)}%`;
+  document.getElementById('compareExplain').innerHTML = escapeHtml(b.explanation).replace(
+    /([+-]?\d+\.\d+%)/g, '<b>$1</b>'
+  );
+
+  const topIds = new Set(data.top_accounts.map(a=>a.customer_id));
+  const topById = {};
+  data.top_accounts.forEach(a=>topById[a.customer_id]=a);
+
+  const tbody = document.getElementById('queueBody');
+  const emptyState = document.getElementById('emptyState');
+  const table = document.getElementById('queueTable');
+  tbody.innerHTML = '';
+
+  if(!data.ranked_queue.length){
+    table.style.display = 'none';
+    emptyState.style.display = 'block';
+    return;
+  }
+  table.style.display = '';
+  emptyState.style.display = 'none';
+
+  data.ranked_queue.forEach(acc=>{
+    const isTop = topIds.has(acc.customer_id);
+    const top = topById[acc.customer_id];
+    const tr = document.createElement('tr');
+    tr.className = isTop ? 'expandable top-priority' : '';
+    tr.innerHTML = `
+      <td><span class="rank-pill">${acc.rank}</span></td>
+      <td>${escapeHtml(acc.customer_id)}${isTop ? ' <span class="chevron">▶</span>' : ''}</td>
+      <td class="mono">${fmtMoney(acc.plan_amount)}</td>
+      <td>${escapeHtml(acc.failure_reason)}</td>
+      <td class="mono">${(acc.confidence*100).toFixed(0)}%</td>
+      <td><span class="badge ${acc.churn_risk}">${escapeHtml(acc.churn_risk)}</span></td>
+      <td class="mono">${(acc.pay_likelihood*100).toFixed(0)}%</td>
+      <td class="mono">${acc.recovery_score.toFixed(2)}</td>
+      <td>${outcomePill(isTop ? top : acc)}</td>
+    `;
+    tbody.appendChild(tr);
+
+    if(isTop){
+      const detailTr = document.createElement('tr');
+      detailTr.className = 'detail-row';
+      detailTr.innerHTML = `<td colspan="9"><div class="detail-inner">${buildDetail(acc, top)}</div></td>`;
+      tbody.appendChild(detailTr);
+
+      tr.addEventListener('click', ()=>{
+        tr.classList.toggle('expanded');
+      });
+    }
+  });
+}
+
+function buildDetail(acc, top){
+  const critiqueClass = top.critique_passed === true ? 'pass' : (top.message_revised ? 'revised' : '');
+  const tick = top.stopped_by_rule ? '⛔ stopping rule triggered — routed to manual review' :
+               top.critique_passed === true ? '✓ passed rubric' :
+               (top.message_revised ? '↻ revised after self-critique' : '– critique unavailable');
+
+  const traceItems = (top.trace || []).map(t => `
+    <li><span class="step-name">${escapeHtml(t.step)} <span class="trace-badge ${t.type}">${t.type}</span></span> ${escapeHtml(t.detail)}</li>
+  `).join('');
+
+  const outcomeLine = top.stopped_by_rule
+    ? `<p style="color:var(--urgency);">Not contacted automatically — ${escapeHtml(top.stopped_by_rule)}</p>`
+    : top.simulated_recovered === true
+      ? `<p>${outcomePill(top)} — simulated ${fmtMoney(top.simulated_amount_recovered)} recovered.</p>`
+      : top.simulated_recovered === false
+        ? `<p>${outcomePill(top)} — simulated outcome, no payment.</p>`
+        : '';
+
+  return `
+    <div class="detail-grid">
+      <div class="detail-block">
+        <h4>Diagnosis reasoning</h4>
+        <p>${escapeHtml(acc.failure_reason)} — classified as <b>${escapeHtml(acc.failure_type.replace('_',' '))}</b> (confidence ${(acc.confidence*100).toFixed(0)}%).</p>
+        <h4>Recovery score</h4>
+        <div class="formula">${escapeHtml(acc.score_formula)}</div>
+        <h4 style="margin-top:16px;">Decided action</h4>
+        <p>${escapeHtml(top.action_label || top.action)}${!top.action_valid ? ' <span class="trace-badge deterministic">coerced to default</span>' : ''}</p>
+        <h4>Simulated outcome</h4>
+        ${outcomeLine || '<p style="color:var(--muted);">Not contacted in this run\'s outreach budget.</p>'}
+      </div>
+      <div class="detail-block">
+        <h4>Final message</h4>
+        <div class="message-box">${escapeHtml(top.final_message)}</div>
+        <div class="critique-note ${critiqueClass}">
+          <span class="tick">${tick}</span>
+        </div>
+        ${top.critique_note ? `<p style="margin-top:8px;color:var(--muted);font-size:12.5px;">${escapeHtml(top.critique_note)}</p>` : ''}
+        <h4 style="margin-top:16px;">Execution trace</h4>
+        <ul class="mini-trace">${traceItems}</ul>
+      </div>
+    </div>
+  `;
+}
+
+function escapeHtml(str){
+  const div = document.createElement('div');
+  div.textContent = str ?? '';
+  return div.innerHTML;
+}
+</script>
+
+</body>
+</html>
