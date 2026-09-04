@@ -1,0 +1,101 @@
+customer_id,plan_amount,months_paid_on_time,total_lifetime_value,payment_method,contract_type,card_expiry_days,last_login_days_ago,failed_attempts
+8178-EYZUO,93.7,46,4154.8,Electronic check,Month-to-month,-13,28,2
+5673-FSSMF,60.15,1,60.15,Electronic check,Month-to-month,20,65,4
+5052-PNLOS,105.35,3,323.25,Bank transfer (automatic),Month-to-month,6,65,2
+1644-IRKSF,93.8,33,3124.5,Electronic check,One year,73,33,5
+5167-ZFFMM,90.85,1,90.85,Credit card (automatic),Month-to-month,-11,70,1
+3419-SNJJD,105.25,65,6786.4,Bank transfer (automatic),Month-to-month,15,10,0
+8884-ADFVN,101.95,7,700.85,Electronic check,Month-to-month,-12,62,4
+4902-OHLSK,98.65,29,2862.75,Electronic check,Month-to-month,13,31,5
+7314-OXENN,82.0,2,184.65,Electronic check,Month-to-month,7,53,5
+0148-DCDOS,94.7,25,2362.1,Bank transfer (automatic),Month-to-month,7,33,0
+4355-HBJHH,79.7,67,5293.4,Electronic check,Two year,156,-1,4
+2359-KMGLI,80.25,24,1861.5,Electronic check,Month-to-month,-7,45,5
+1122-JWTJW,70.65,1,70.65,Mailed check,Month-to-month,10,72,1
+6959-UWKHF,42.9,1,42.9,Electronic check,Month-to-month,-10,57,5
+5364-XYIRR,94.65,51,4812.75,Electronic check,Month-to-month,20,9,3
+6390-DSAZX,73.6,1,73.6,Mailed check,Month-to-month,12,71,1
+7133-VBDCG,79.85,25,2015.35,Bank transfer (automatic),Month-to-month,11,49,2
+4585-HETAI,73.75,4,325.45,Electronic check,Month-to-month,9,70,3
+3318-OSATS,95.45,35,3474.05,Electronic check,Month-to-month,-10,23,3
+1218-VKFPE,19.0,12,233.55,Mailed check,Month-to-month,-1,43,2
+6474-FVJLC,86.0,2,165.45,Electronic check,Month-to-month,-4,58,2
+2189-WWOEW,85.9,15,1269.55,Bank transfer (automatic),Month-to-month,-6,48,1
+2114-MGINA,89.8,14,1129.1,Mailed check,Month-to-month,5,60,2
+7593-XFKDI,46.3,1,46.3,Mailed check,Month-to-month,17,73,2
+0447-BEMNG,45.3,48,2145.0,Bank transfer (automatic),Month-to-month,-12,16,2
+5748-RNCJT,106.5,69,7348.8,Bank transfer (automatic),Two year,173,4,1
+9837-BMCLM,78.5,3,242.05,Electronic check,Month-to-month,10,54,5
+3842-IYKUE,85.3,35,2917.5,Credit card (automatic),Month-to-month,-12,23,0
+5318-IXUZF,87.15,2,183.75,Bank transfer (automatic),Month-to-month,13,56,1
+2626-URJFX,50.9,4,225.6,Electronic check,Month-to-month,-12,53,3
+3957-LXOLK,106.15,28,3152.5,Electronic check,Month-to-month,19,29,4
+6235-VDHOM,28.45,5,131.05,Electronic check,Month-to-month,-14,51,3
+2013-SGDXK,84.3,1,84.3,Electronic check,Month-to-month,9,56,4
+8063-GBATB,85.25,27,2287.25,Electronic check,Month-to-month,7,40,5
+4248-HCETZ,79.65,30,2365.15,Mailed check,Month-to-month,-8,27,1
+6599-CEBNN,73.95,34,2524.45,Credit card (automatic),Month-to-month,14,30,1
+3877-JRJIP,59.85,1,59.85,Electronic check,Month-to-month,-10,56,4
+0259-GBZSH,85.65,2,181.5,Electronic check,Month-to-month,1,62,3
+6121-VZNQB,19.1,1,19.1,Mailed check,Month-to-month,18,54,2
+3319-DWOEP,95.75,6,573.75,Electronic check,Month-to-month,8,51,2
+5669-SRAIP,39.5,5,210.75,Electronic check,Month-to-month,18,55,2
+2506-CLAKW,98.15,6,567.45,Bank transfer (automatic),Month-to-month,1,59,0
+1086-LXKFY,69.1,1,69.1,Mailed check,Month-to-month,7,69,2
+8257-RZAHR,64.7,14,941.0,Bank transfer (automatic),Month-to-month,19,56,1
+6416-TVAIH,68.5,1,68.5,Electronic check,Month-to-month,-1,66,3
+9448-REEVD,44.7,1,44.7,Credit card (automatic),Month-to-month,0,70,2
+3018-TFTSU,81.7,12,858.6,Bank transfer (automatic),Month-to-month,-1,46,1
+2519-FAKOD,99.25,38,3777.15,Bank transfer (automatic),Month-to-month,7,31,0
+3400-ESFUW,57.55,55,3046.4,Bank transfer (automatic),Two year,101,9,0
+8752-STIVR,79.0,4,303.15,Electronic check,Month-to-month,7,59,4
+5747-PMBSQ,92.5,10,934.1,Mailed check,Month-to-month,8,46,0
+5419-CONWX,99.8,4,442.85,Credit card (automatic),Month-to-month,-1,60,1
+0727-BMPLR,100.0,55,5509.3,Electronic check,One year,36,9,2
+3428-XZMAZ,69.35,1,69.35,Electronic check,Month-to-month,15,72,4
+1862-SKORY,39.3,40,1637.4,Electronic check,Month-to-month,-10,31,2
+2952-QAYZF,85.3,5,424.15,Electronic check,Month-to-month,9,65,3
+9747-DDZOS,73.5,1,73.5,Bank transfer (automatic),Month-to-month,15,71,1
+4289-DTDKW,101.3,40,4113.1,Electronic check,Month-to-month,6,16,5
+1043-YCUTE,25.15,56,1327.15,Credit card (automatic),Two year,148,7,0
+9572-MTILT,106.75,59,6252.9,Electronic check,Month-to-month,-5,0,3
+5609-CEBID,94.1,20,1782.4,Electronic check,Month-to-month,-14,38,5
+0378-XSZPU,60.3,58,3563.8,Credit card (automatic),One year,28,9,2
+5949-XIKAE,83.55,8,680.05,Electronic check,Month-to-month,15,60,4
+5707-ORNDZ,54.55,9,494.05,Electronic check,Month-to-month,-6,56,3
+7459-RRWQZ,64.65,15,994.55,Bank transfer (automatic),Month-to-month,-14,40,2
+0004-TLHLJ,73.9,4,280.85,Electronic check,Month-to-month,-9,61,3
+1213-NGCUN,49.65,6,267.35,Bank transfer (automatic),Month-to-month,12,68,0
+2748-MYRVK,99.9,63,6137.0,Bank transfer (automatic),One year,37,-2,0
+7663-RGWBC,44.15,1,44.15,Mailed check,Month-to-month,3,64,2
+1871-MOWRM,80.85,12,866.45,Bank transfer (automatic),Month-to-month,5,48,1
+2636-OHFMN,48.55,4,201.0,Electronic check,Month-to-month,-7,52,4
+1771-OADNZ,95.9,29,2745.2,Electronic check,Month-to-month,14,39,5
+6331-EWIEB,85.25,20,1734.5,Electronic check,Month-to-month,17,37,3
+3999-QGRJH,69.7,8,560.85,Electronic check,Month-to-month,18,57,5
+2774-LVQUS,83.05,15,1258.3,Electronic check,Month-to-month,-4,52,3
+9614-RMGHA,91.85,65,5940.85,Bank transfer (automatic),Month-to-month,-4,0,2
+4077-CROMM,104.2,31,3243.45,Electronic check,Month-to-month,-8,35,4
+0471-LVHGK,73.0,41,3001.2,Electronic check,One year,76,24,5
+7503-ZGUZJ,84.65,1,84.65,Mailed check,Month-to-month,-9,71,0
+5649-TJHOV,36.5,27,1032.0,Bank transfer (automatic),Month-to-month,0,31,0
+3143-ILDAL,94.45,56,5124.6,Electronic check,Month-to-month,-9,9,2
+7538-GWHML,69.65,2,145.15,Electronic check,Month-to-month,-11,61,3
+3714-JTVOV,74.15,42,3229.4,Credit card (automatic),Month-to-month,2,22,2
+3211-ILJTT,70.4,17,1214.05,Bank transfer (automatic),Month-to-month,15,48,0
+0112-QWPNC,84.35,49,4059.35,Electronic check,One year,76,23,4
+4039-HEUNW,96.5,36,3436.1,Electronic check,Month-to-month,20,36,3
+7839-QRKXN,20.2,1,20.2,Mailed check,Month-to-month,13,56,0
+1569-TTNYJ,78.75,5,412.1,Electronic check,Month-to-month,10,58,2
+9444-JTXHZ,76.2,1,76.2,Electronic check,Month-to-month,0,62,3
+9026-RNUJS,50.35,5,237.25,Electronic check,Month-to-month,4,65,3
+0866-QLSIR,64.4,34,2088.75,Mailed check,One year,56,23,0
+2962-XPMCQ,45.15,2,98.5,Electronic check,Month-to-month,14,57,2
+6543-CPZMK,29.95,9,248.95,Electronic check,Month-to-month,10,63,3
+2860-RANUS,85.8,20,1727.5,Credit card (automatic),Month-to-month,-1,38,1
+4566-QVRRW,44.05,11,483.7,Electronic check,Month-to-month,17,52,5
+4550-EVXNY,69.65,1,69.65,Electronic check,Month-to-month,-3,61,2
+9462-MJUAW,50.4,4,206.6,Mailed check,Month-to-month,8,51,2
+6358-LYNGM,74.9,1,74.9,Electronic check,Month-to-month,14,62,2
+2930-UOTMB,65.25,31,1994.3,Credit card (automatic),Month-to-month,9,30,2
+5016-ETTFF,29.5,10,255.25,Mailed check,Month-to-month,3,55,0
